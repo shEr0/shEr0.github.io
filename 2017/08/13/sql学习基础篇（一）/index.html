@@ -117,7 +117,7 @@
 <meta property="og:image" content="http://sher0.github.io/img/less11-1.jpg">
 <meta property="og:image" content="http://sher0.github.io/img/less11-2.jpg">
 <meta property="og:image" content="http://sher0.github.io/img/less11-3.jpg">
-<meta property="og:image" content="http://sher0.github.io/img/less11-1.jpg">
+<meta property="og:image" content="http://sher0.github.io/img/less11-4.jpg">
 <meta property="og:image" content="http://sher0.github.io/img/less18-3.jpg">
 <meta property="og:image" content="http://sher0.github.io/img/less18-1.jpg">
 <meta property="og:image" content="http://sher0.github.io/img/less18-2.jpg">
@@ -129,7 +129,7 @@
 <meta property="og:image" content="http://sher0.github.io/img/less7-4.jpg">
 <meta property="og:image" content="http://sher0.github.io/img/less7-5.jpg">
 <meta property="og:image" content="http://sher0.github.io/img/less7-6.jpg">
-<meta property="og:updated_time" content="2017-08-13T12:21:37.323Z">
+<meta property="og:updated_time" content="2017-08-13T12:25:59.569Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="sql学习（一）">
 <meta name="twitter:description" content="前言  最近花了一些时间把sql注入方面的基础知识结合sqlilabs的教程看完了，这里就做一个总结。 基础知识1.sql注入原理SQL注入漏洞的形成原因是：用户输入的数据或语句被sql解释器执行，而我们所要做的就是利用SQL注入绕过登录验证 2.sql注入分类分类见仁见智，就最基础的可大致这样来看 基于从服务器接收到的响应  基于错误的SQL注入 联合查询 sql盲注  基于注入点位置上的  p">
@@ -511,7 +511,7 @@
 <p>post即是数据从客户端提交到服务器端</p>
 <p>当我们输入正确的用户名和密码，回显正确。<br><img src="/img/less11-1.jpg" alt="Alt text"><br>在post过程中，我们输入用户名和密码后台也能形成sql语句，我们就可以像get型一样构造post的payload。<br><img src="/img/less11-2.jpg" alt="Alt text"><br>我们可以输入万能用户名来测试<br>username:admin ‘#<br>password:123（随便输）<br><img src="/img/less11-3.jpg" alt="Alt text"><br>我们可以看到对单引号的处理，接着我们尝试输入<br>username:admin’ or ‘1’=’1#  密码随意  得到回显正确</p>
 <p>在此我们就可用union注入进行尝试：<br><figure class="highlight gauss"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">username:<span class="number">1</span>admin' <span class="built_in">union</span> <span class="built_in">select</span> <span class="number">1</span>,database()<span class="meta">#</span></div><div class="line">password:随意</div></pre></td></tr></table></figure></p>
-<p><img src="/img/less11-1.jpg" alt="Alt text"><br>我们可以看到爆出了数据库security<br>接下来以此类推，构造sql语句进行注入</p>
+<p><img src="/img/less11-4.jpg" alt="Alt text"><br>我们可以看到爆出了数据库security<br>接下来以此类推，构造sql语句进行注入</p>
 <p>在其他的post关卡中，有的不会显示你的登录信息，只会显示是否登录成功，此种情况就需要进行盲注。</p>
 <p><strong>4.http头注入和cookie注入</strong></p>
 <p>http：以less18为例<br>当我们输入数据库中的用户名和密码时，页面返回了useragent的信息<br><img src="/img/less18-3.jpg" alt="Alt text"><br>尝试对username进行注入，发现始终失败。通过查看源代码，发现<br><img src="/img/less18-1.jpg" alt="Alt text"><br>对uname和passwd进行了check_out()函数的处理，但我们在sql语句中看到了insert()<br><img src="/img/less18-2.jpg" alt="Alt text"><br>我们看到插入了useragent和ip，修改ip不方便，我们就可以通过修改useragent来进行注入。</p>
@@ -652,7 +652,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">3</span>
+                <span class="site-state-item-count">2</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
